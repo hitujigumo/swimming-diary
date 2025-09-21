@@ -11,7 +11,7 @@
     color: #aaffff;
   }
 
-  /* アニメーション背景用の擬似要素 */
+  /* アニメーション背景 */
   body::before {
     content: "";
     position: fixed;
@@ -22,12 +22,11 @@
   }
 
   @keyframes wave {
-    0% { transform: translateY(0px); background-position: 0 0; }
-    50% { transform: translateY(-20px); background-position: 0 20px; }
-    100% { transform: translateY(0px); background-position: 0 0; }
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+    100% { transform: translateY(0px); }
   }
 
-  /* タイトル */
   #title {
     position: fixed;
     top: 10px;
@@ -39,21 +38,23 @@
     z-index: 1000;
   }
 
-  /* コントロールパネル */
+  /* コントロールパネル（右端） */
   #controls {
     position: fixed;
     top: 50px;
-    left: 50%;
-    transform: translateX(-50%);
+    right: 10px;
     z-index: 1000;
     background: rgba(0,0,0,0.3);
-    padding: 10px 15px;
+    padding: 10px;
     border-radius: 10px;
     display: flex;
+    flex-direction: column;
     gap: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
+    transition: transform 0.3s;
+  }
+
+  #controls.hidden {
+    transform: translateX(120%);
   }
 
   #controls input[type="text"] {
@@ -61,13 +62,13 @@
     border-radius: 15px;
     border: none;
     outline: none;
-    width: 200px;
+    width: 180px;
     background: rgba(255,255,255,0.15);
     color: #ccf;
     box-shadow: 0 1px 3px rgba(0,0,0,0.5);
   }
 
-  #controls button {
+  #controls button, #toggle-btn {
     padding: 6px 12px;
     border-radius: 15px;
     border: none;
@@ -76,8 +77,7 @@
     cursor: pointer;
     box-shadow: 0 1px 3px rgba(0,0,0,0.5);
   }
-
-  #controls button:hover {
+  #controls button:hover, #toggle-btn:hover {
     background: #003377;
   }
 
@@ -92,14 +92,23 @@
     pointer-events: none;
     transition: transform 0.1s linear;
   }
+
+  #toggle-btn {
+    position: fixed;
+    top: 50px;
+    right: 10px;
+    z-index: 1001;
+  }
 </style>
 </head>
 <body>
 
 <div id="title">泳ぐ日記</div>
 
-<div id="controls">
-  <input type="text" id="text-input" placeholder="文字を入力してEnter or 追加">
+<button id="toggle-btn">設定</button>
+
+<div id="controls" class="hidden">
+  <input type="text" id="text-input" placeholder="単語を入力してEnter or 追加">
   <button id="add-btn">追加</button>
   <label>速度: <input type="range" id="speed-slider" min="0.5" max="5" step="0.1" value="2"></label>
   <label>量: <input type="range" id="amount-slider" min="10" max="100" step="1" value="50"></label>
@@ -111,13 +120,9 @@ document.addEventListener("DOMContentLoaded", () => {
   let texts = [];
   let mouse = { x: -1000, y: -1000 };
 
-  const initialTexts = [
-    "今日はどんなことしたの？",
-    "どうだった？",
-    "楽しかった？悲しかった？？",
-    "面白かった？",
-    "昨日は何してた？",
-    "今日の気分は？"
+  const initialWords = [
+    "今日", "楽しかった", "悲しかった", "面白い", "どうだった",
+    "天気", "友達", "学校", "遊び", "昼ごはん", "気分", "笑った", "泣いた"
   ];
 
   const textInput = document.getElementById("text-input");
@@ -125,11 +130,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const speedSlider = document.getElementById("speed-slider");
   const amountSlider = document.getElementById("amount-slider");
   const sizeSlider = document.getElementById("size-slider");
+  const controls = document.getElementById("controls");
+  const toggleBtn = document.getElementById("toggle-btn");
 
-  function addText(char) {
+  function addText(word) {
     const span = document.createElement("span");
     span.classList.add("fish-text");
-    span.textContent = char;
+    span.textContent = word;
 
     const baseSize = parseInt(sizeSlider.value);
     const size = baseSize + Math.random() * 10;
@@ -155,8 +162,8 @@ document.addEventListener("DOMContentLoaded", () => {
     texts = [];
     const amount = parseInt(amountSlider.value);
     for (let i = 0; i < amount; i++) {
-      const text = initialTexts[Math.floor(Math.random() * initialTexts.length)];
-      addText(text);
+      const word = initialWords[Math.floor(Math.random() * initialWords.length)];
+      addText(word);
     }
   }
 
@@ -169,7 +176,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function addInputText() {
     if(textInput.value.trim() !== "") {
-      textInput.value.split("").forEach(c => addText(c));
+      textInput.value.split(" ").forEach(word => addText(word));
       textInput.value = "";
     }
   }
@@ -182,10 +189,14 @@ document.addEventListener("DOMContentLoaded", () => {
   amountSlider.addEventListener("input", populateInitial);
   sizeSlider.addEventListener("input", populateInitial);
 
-  function animate() {
-    texts.forEach(t => {
-      t.x += t.speed;
+  toggleBtn.addEventListener("click", () => {
+    controls.classList.toggle("hidden");
+  });
 
+  function animate() {
+    for (let i = texts.length - 1; i >= 0; i--) {
+      let t = texts[i];
+      t.x += t.speed;
       const wave = Math.sin(Date.now() / 200 + t.offset) * 5;
 
       const dx = t.x - mouse.x;
@@ -196,13 +207,18 @@ document.addEventListener("DOMContentLoaded", () => {
         t.x += dx / dist * 1;
       }
 
-      if (t.x > window.innerWidth + 20) {
-        t.x = -20;
-        t.y = Math.random() * window.innerHeight;
+      if (t.x > window.innerWidth + 50) {
+        // 右端を超えたら削除
+        t.el.remove();
+        texts.splice(i,1);
+        // 左側から新しい文字生成
+        const word = initialWords[Math.floor(Math.random() * initialWords.length)];
+        addText(word);
+        continue;
       }
 
       t.el.style.transform = `translate(${t.x}px, ${t.y + wave}px)`;
-    });
+    }
 
     requestAnimationFrame(animate);
   }
