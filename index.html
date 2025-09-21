@@ -13,7 +13,6 @@
     color: #aaffff;
   }
 
-  /* 背景を少し明るめの青に */
   body::before {
     content: "";
     position: fixed;
@@ -40,7 +39,6 @@
     z-index: 1000;
   }
 
-  /* 上部テキスト入力欄 */
   #top-controls {
     position: fixed;
     top: 50px;
@@ -79,7 +77,6 @@
     background: #003377;
   }
 
-  /* 右側スライダーUI */
   #side-controls {
     position: fixed;
     top: 50px;
@@ -169,7 +166,6 @@ document.addEventListener("DOMContentLoaded", () => {
     span.classList.add("fish-text");
     span.textContent = word;
 
-    // ランダムフォント
     const font = fonts[Math.floor(Math.random() * fonts.length)];
     span.style.fontFamily = font;
 
@@ -184,7 +180,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     texts.push({
       el: span,
-      x: -50, // 左端スタート
+      x: -200, // 画面左外からスタート
       y: Math.random() * (window.innerHeight - 100) + 50,
       speed: (1 + Math.random() * 2) * parseFloat(speedSlider.value)/2,
       offset: Math.random() * Math.PI * 2,
@@ -192,7 +188,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 初期文字生成
   function populateInitial() {
     texts.forEach(t => t.el.remove());
     texts = [];
@@ -205,13 +200,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   populateInitial();
 
-  // 入力処理
   function addInputText() {
     if(textInput.value.trim() !== "") {
       const words = textInput.value.split(" ");
       words.forEach(word => {
         addText(word);
-        wordPool.push(word); // 入力単語も今後延々と流れる
+        wordPool.push(word); // 入力した単語も今後延々と流れる
       });
       textInput.value = "";
     }
@@ -229,11 +223,10 @@ document.addEventListener("DOMContentLoaded", () => {
     sideControls.classList.toggle("hidden");
   });
 
-  // 一定間隔で新しい文字を左端から追加（延々と流す）
   setInterval(() => {
     const word = wordPool[Math.floor(Math.random() * wordPool.length)];
     addText(word);
-  }, 500); // 0.5秒ごとに追加
+  }, 500);
 
   function animate() {
     for (let i = texts.length - 1; i >= 0; i--) {
@@ -249,7 +242,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       t.el.style.transform = `translate(${t.x}px, ${t.y + wave}px)`;
     }
-
     requestAnimationFrame(animate);
   }
 
