@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <title>泳ぐ日記</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Comic+Neue:wght@700&family=Monoton&family=Courier+New&display=swap" rel="stylesheet">
 <style>
   body {
     margin: 0;
@@ -11,7 +13,7 @@
     color: #aaffff;
   }
 
-  /* アニメーション背景 */
+  /* 背景 */
   body::before {
     content: "";
     position: fixed;
@@ -147,9 +149,14 @@
 document.addEventListener("DOMContentLoaded", () => {
   let texts = [];
   const initialWords = [
+    // 日記っぽい単語
     "今日", "楽しかった", "悲しかった", "面白い", "どうだった",
-    "天気", "友達", "学校", "遊び", "昼ごはん", "気分", "笑った", "泣いた"
+    "天気", "友達", "学校", "遊び", "昼ごはん", "気分", "笑った", "泣いた",
+    // 意味不明/記号
+    "埃", "酒〜", "∑", "★", "@!#", "…？", "∞", "泡", "謎", "???"
   ];
+
+  const fonts = ['Pacifico', 'Comic Neue', 'Monoton', 'Courier New', 'Arial'];
 
   const textInput = document.getElementById("text-input");
   const addBtn = document.getElementById("add-btn");
@@ -164,6 +171,10 @@ document.addEventListener("DOMContentLoaded", () => {
     span.classList.add("fish-text");
     span.textContent = word;
 
+    // ランダムフォント
+    const font = fonts[Math.floor(Math.random() * fonts.length)];
+    span.style.fontFamily = font;
+
     const baseSize = parseInt(sizeSlider.value);
     const size = baseSize + Math.random() * 10;
     span.style.fontSize = size + "px";
@@ -175,7 +186,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     texts.push({
       el: span,
-      x: -50, // 左端からスタート
+      x: -50, // 左端スタート
       y: Math.random() * (window.innerHeight - 100) + 50, // 上部入力欄避ける
       speed: (1 + Math.random() * 2) * parseFloat(speedSlider.value)/2,
       offset: Math.random() * Math.PI * 2,
@@ -224,7 +235,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (t.x > window.innerWidth + 50) {
         t.el.remove();
         texts.splice(i,1);
-        // 左端から新しい文字を生成して常に延々と流れる
+        // 左端から新しい文字を生成して常に流れる
         const word = initialWords[Math.floor(Math.random() * initialWords.length)];
         addText(word);
         continue;
