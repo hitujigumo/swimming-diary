@@ -2,12 +2,13 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>魚群文字</title>
+<title>魚文字アニメ（入力対応版）</title>
 <style>
   body {
     margin: 0;
     overflow: hidden;
-    background-color: #001; /* 海っぽく */
+    background: linear-gradient(to bottom, #004080, #001f3f); /* 海っぽい青グラデーション */
+    font-family: sans-serif;
   }
   .fish-text {
     position: absolute;
@@ -17,54 +18,55 @@
     pointer-events: none;
     transition: transform 0.1s linear;
   }
-</style>
-</head>
-<body>
-
-<script>
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<title>文字が泳ぐ</title>
-<style>
-  body {
-    margin: 0;
-    overflow: hidden;
-    background-color: #001;
+  #input-container {
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
   }
-  .fish-text {
-    position: absolute;
-    font-size: 20px;
-    color: #0ff;
-    user-select: none;
-    pointer-events: none;
-    transition: transform 0.1s linear;
+  #text-input {
+    font-size: 16px;
+    padding: 5px 10px;
+  }
+  #add-btn {
+    font-size: 16px;
+    padding: 5px 10px;
+    margin-left: 5px;
   }
 </style>
 </head>
 <body>
 
+<div id="input-container">
+  <input type="text" id="text-input" placeholder="文字を入力してEnter or 追加">
+  <button id="add-btn">追加</button>
+</div>
+
 <script>
-const numTexts = 40;
-const letters = "abcdefghijklmnopqrstuvwxyzあいうえお0123456789";
 let texts = [];
+let mouse = { x: -1000, y: -1000 };
 
-let mouse = { x: -1000, y: -1000 }; // 初期は画面外
-
-for (let i = 0; i < numTexts; i++) {
+// 文字を追加する関数
+function addText(char) {
   const span = document.createElement("span");
   span.classList.add("fish-text");
-  span.textContent = letters[Math.floor(Math.random() * letters.length)];
+  span.textContent = char;
   document.body.appendChild(span);
 
   texts.push({
     el: span,
-    x: Math.random() * window.innerWidth,
+    x: -20, // 左端からスタート
     y: Math.random() * window.innerHeight,
-    speed: 1 + Math.random() * 2, // 左から右の速度
-    offset: Math.random() * Math.PI * 2 // 波の揺れ
+    speed: 1 + Math.random() * 2,
+    offset: Math.random() * Math.PI * 2
   });
+}
+
+// 初期文字（ランダム）
+const letters = "abcdefghijklmnopqrstuvwxyzあいうえお0123456789";
+for (let i = 0; i < 40; i++) {
+  addText(letters[Math.floor(Math.random() * letters.length)]);
 }
 
 // マウス位置更新
@@ -73,6 +75,23 @@ window.addEventListener("mousemove", e => {
   mouse.y = e.clientY;
 });
 
+// 入力対応
+const input = document.getElementById("text-input");
+const btn = document.getElementById("add-btn");
+input.addEventListener("keydown", e => {
+  if(e.key === "Enter" && input.value.trim() !== "") {
+    input.value.split("").forEach(c => addText(c));
+    input.value = "";
+  }
+});
+btn.addEventListener("click", () => {
+  if(input.value.trim() !== "") {
+    input.value.split("").forEach(c => addText(c));
+    input.value = "";
+  }
+});
+
+// アニメーション
 function animate() {
   texts.forEach(t => {
     // 左から右に移動
@@ -85,7 +104,7 @@ function animate() {
     const dx = t.x - mouse.x;
     const dy = t.y - mouse.y;
     const dist = Math.sqrt(dx*dx + dy*dy);
-    if (dist < 100) { // 近づくと逃げる
+    if (dist < 100) {
       t.y += dy / dist * 3;
       t.x += dx / dist * 1;
     }
@@ -106,8 +125,3 @@ animate();
 </script>
 </body>
 </html>
-
-</script>
-</body>
-</html>
-fish.html
