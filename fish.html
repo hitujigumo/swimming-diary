@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>魚群文字</title>
+<style>
+  body {
+    margin: 0;
+    overflow: hidden;
+    background-color: #001; /* 海っぽく */
+  }
+  .fish-text {
+    position: absolute;
+    font-size: 20px;
+    color: #0ff;
+    user-select: none;
+    pointer-events: none;
+    transition: transform 0.1s linear;
+  }
+</style>
+</head>
+<body>
+
+<script>
+const numTexts = 40;
+const letters = "abcdefghijklmnopqrstuvwxyzあいうえお0123456789";
+let texts = [];
+
+let mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+
+for (let i = 0; i < numTexts; i++) {
+  const span = document.createElement("span");
+  span.classList.add("fish-text");
+  span.textContent = letters[Math.floor(Math.random() * letters.length)];
+  document.body.appendChild(span);
+
+  texts.push({
+    el: span,
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    vx: 0,
+    vy: 0,
+    offset: Math.random() * Math.PI * 2 // 波の揺れ用
+  });
+}
+
+// マウス位置更新
+window.addEventListener("mousemove", e => {
+  mouse.x = e.clientX;
+  mouse.y = e.clientY;
+});
+
+function animate() {
+  texts.forEach(t => {
+    // マウスへの方向ベクトル
+    const dx = mouse.x - t.x + (Math.random() - 0.5) * 50;
+    const dy = mouse.y - t.y + (Math.random() - 0.5) * 50;
+    const dist = Math.sqrt(dx*dx + dy*dy) || 1;
+
+    // 少しランダムな速度
+    const speed = 2 + Math.random();
+
+    t.vx += (dx / dist) * 0.05;
+    t.vy += (dy / dist) * 0.05;
+
+    // 速度制限
+    t.vx *= 0.95;
+    t.vy *= 0.95;
+
+    // 波の揺れを追加
+    const wave = Math.sin(Date.now() / 200 + t.offset) * 5;
+
+    // 位置更新
+    t.x += t.vx;
+    t.y += t.vy + wave * 0.1;
+
+    // 画面ループ
+    if (t.x < -20) t.x = window.innerWidth;
+    if (t.x > window.innerWidth + 20) t.x = -20;
+    if (t.y < -20) t.y = window.innerHeight;
+    if (t.y > window.innerHeight + 20) t.y = -20;
+
+    t.el.style.transform = `translate(${t.x}px, ${t.y}px)`;
+  });
+
+  requestAnimationFrame(animate);
+}
+
+animate();
+</script>
+</body>
+</html>
+fish.html
