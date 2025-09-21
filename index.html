@@ -81,6 +81,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const toggleBtn = document.getElementById("toggle-btn");
   const historyList = document.getElementById("history-list");
 
+  function getTimestamp() {
+    const now = new Date();
+    return `${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()}/${now.getHours()}:${now.getMinutes().toString().padStart(2,'0')}`;
+  }
+
   function addText(word, timestamp=null){
     const span = document.createElement("span");
     span.classList.add("fish-text");
@@ -96,7 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const hue = 180 + Math.random()*60;
     span.style.color = `hsl(${hue}, 70%, 60%)`;
 
-    if(!timestamp) timestamp = new Date().toLocaleTimeString();
+    if(!timestamp) timestamp = getTimestamp();
     const ts = document.createElement("span");
     ts.classList.add("timestamp");
     ts.textContent = timestamp;
@@ -104,7 +109,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.body.appendChild(span);
 
-    texts.push({el:span, x:-200, y:Math.random()*(window.innerHeight-100)+50, speed:(1+Math.random()*2)*parseFloat(speedSlider.value)/2, offset:Math.random()*Math.PI*2, size:size});
+    texts.push({
+      el:span,
+      x:-400, // 左画面外に移動
+      y:Math.random()*(window.innerHeight-100)+50,
+      speed:(1+Math.random()*2)*parseFloat(speedSlider.value)/2,
+      offset:Math.random()*Math.PI*2,
+      size:size
+    });
   }
 
   function addToHistory(word){
