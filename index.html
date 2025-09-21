@@ -3,126 +3,41 @@
 <head>
 <meta charset="UTF-8">
 <title>泳ぐ日記</title>
-<!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Comic+Neue:wght@700&family=Monoton&family=Courier+New&display=swap" rel="stylesheet">
 <style>
-  body {
-    margin: 0;
-    overflow: hidden;
-    font-family: 'Arial', sans-serif;
-    color: #aaffff;
-  }
-
+  body { margin: 0; overflow: hidden; font-family: 'Arial', sans-serif; color: #aaffff; }
   body::before {
-    content: "";
-    position: fixed;
-    top:0; left:0; width:100%; height:100%;
-    background: linear-gradient(to bottom, #003366, #001933);
-    z-index: -1;
-    animation: wave 10s ease-in-out infinite alternate;
+    content:""; position: fixed; top:0; left:0; width:100%; height:100%;
+    background: linear-gradient(to bottom, #003366, #001933); z-index:-1;
   }
 
-  @keyframes wave {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-20px); }
-    100% { transform: translateY(0px); }
-  }
-
-  #title {
-    position: fixed;
-    top: 10px;
-    left: 20px;
-    font-size: 28px;
-    font-weight: bold;
-    color: #aaffff;
-    text-shadow: 1px 1px 4px #000;
-    z-index: 1000;
-  }
+  #title { position: fixed; top:10px; left:20px; font-size:28px; font-weight:bold; text-shadow:1px 1px 4px #000; z-index:1000; }
 
   #top-controls {
-    position: fixed;
-    top: 50px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
-    background: rgba(0,0,0,0.3);
-    padding: 10px 15px;
-    border-radius: 10px;
-    display: flex;
-    gap: 10px;
-    align-items: center;
+    position: fixed; top:50px; left:50%; transform:translateX(-50%);
+    z-index:1000; background: rgba(0,0,0,0.3); padding:10px 15px;
+    border-radius:10px; display:flex; gap:10px; align-items:center;
   }
-
-  #top-controls input[type="text"] {
-    padding: 5px 10px;
-    border-radius: 15px;
-    border: none;
-    outline: none;
-    width: 300px;
-    background: rgba(255,255,255,0.15);
-    color: #ccf;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.5);
-  }
-
-  #top-controls button {
-    padding: 6px 12px;
-    border-radius: 15px;
-    border: none;
-    background: #0044aa;
-    color: white;
-    cursor: pointer;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.5);
-  }
-  #top-controls button:hover {
-    background: #003377;
-  }
+  #top-controls input[type="text"] { padding:5px 10px; border-radius:15px; border:none; outline:none; width:300px; background: rgba(255,255,255,0.15); color:#ccf; }
+  #top-controls button { padding:6px 12px; border-radius:15px; border:none; background:#0044aa; color:white; cursor:pointer; }
+  #top-controls button:hover { background:#003377; }
 
   #side-controls {
-    position: fixed;
-    top: 50px;
-    right: 10px;
-    z-index: 1000;
-    background: rgba(0,0,0,0.3);
-    padding: 10px;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    transition: transform 0.3s;
+    position: fixed; top:50px; right:10px; z-index:1000; background: rgba(0,0,0,0.3); padding:10px;
+    border-radius:10px; display:flex; flex-direction:column; gap:10px; transition: transform 0.3s;
   }
-
-  #side-controls.hidden {
-    transform: translateX(120%);
-  }
-
-  #side-controls label {
-    color: #aaffff;
-    font-size: 14px;
-  }
+  #side-controls.hidden { transform:translateX(120%); }
+  #side-controls label { color:#aaffff; font-size:14px; }
+  #history-list { max-height:300px; overflow-y:auto; list-style:none; padding:0; margin:0; color:#ccf; }
+  #history-list li { display:flex; justify-content:space-between; padding:2px 4px; font-size:14px; }
 
   .fish-text {
-    position: absolute;
-    user-select: none;
-    pointer-events: none;
-    transition: transform 0.1s linear;
+    position: absolute; user-select: none; pointer-events: none; transition: transform 0.1s linear;
   }
+  .timestamp { font-size:0.4em; opacity:0.5; margin-left:5px; }
 
-  #toggle-btn {
-    position: fixed;
-    top: 50px;
-    right: 10px;
-    z-index: 1001;
-    padding: 6px 12px;
-    border-radius: 15px;
-    border: none;
-    background: #0044aa;
-    color: white;
-    cursor: pointer;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.5);
-  }
-  #toggle-btn:hover {
-    background: #003377;
-  }
+  #toggle-btn { position: fixed; top:50px; right:10px; z-index:1001; padding:6px 12px; border-radius:15px; border:none; background:#0044aa; color:white; cursor:pointer; }
+  #toggle-btn:hover { background:#003377; }
 </style>
 </head>
 <body>
@@ -140,19 +55,23 @@
   <label>速度: <input type="range" id="speed-slider" min="0.5" max="5" step="0.1" value="2"></label>
   <label>量: <input type="range" id="amount-slider" min="10" max="100" step="1" value="50"></label>
   <label>文字サイズ: <input type="range" id="size-slider" min="10" max="50" step="1" value="24"></label>
+  <div>
+    <strong>履歴</strong>
+    <ul id="history-list"></ul>
+  </div>
 </div>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   let texts = [];
   let wordPool = [
-    "今日", "楽しかった", "悲しかった", "面白い", "どうだった",
-    "天気", "友達", "学校", "遊び", "昼ごはん", "気分", "笑った", "泣いた",
-    "埃", "酒〜", "∑", "★", "@!#", "…？", "∞", "泡", "謎", "???"
+    "今日","楽しかった","悲しかった","面白い","どうだった",
+    "天気","友達","学校","遊び","昼ごはん","気分","笑った","泣いた",
+    "埃","酒〜","∑","★","@!#","…？","∞","泡","謎","???"
   ];
+  let history = [];
 
-  const fonts = ['Pacifico', 'Comic Neue', 'Monoton', 'Courier New', 'Arial'];
-
+  const fonts = ['Pacifico','Comic Neue','Monoton','Courier New','Arial'];
   const textInput = document.getElementById("text-input");
   const addBtn = document.getElementById("add-btn");
   const speedSlider = document.getElementById("speed-slider");
@@ -160,91 +79,95 @@ document.addEventListener("DOMContentLoaded", () => {
   const sizeSlider = document.getElementById("size-slider");
   const sideControls = document.getElementById("side-controls");
   const toggleBtn = document.getElementById("toggle-btn");
+  const historyList = document.getElementById("history-list");
 
-  function addText(word) {
+  function addText(word, timestamp=null){
     const span = document.createElement("span");
     span.classList.add("fish-text");
     span.textContent = word;
 
-    const font = fonts[Math.floor(Math.random() * fonts.length)];
+    const font = fonts[Math.floor(Math.random()*fonts.length)];
     span.style.fontFamily = font;
 
     const baseSize = parseInt(sizeSlider.value);
-    const size = baseSize + Math.random() * 10;
-    span.style.fontSize = size + "px";
+    const size = baseSize + Math.random()*10;
+    span.style.fontSize = size+"px";
 
-    const hue = 180 + Math.random() * 60;
+    const hue = 180 + Math.random()*60;
     span.style.color = `hsl(${hue}, 70%, 60%)`;
+
+    if(!timestamp) timestamp = new Date().toLocaleTimeString();
+    const ts = document.createElement("span");
+    ts.classList.add("timestamp");
+    ts.textContent = timestamp;
+    span.appendChild(ts);
 
     document.body.appendChild(span);
 
-    texts.push({
-      el: span,
-      x: -200, // 画面左外からスタート
-      y: Math.random() * (window.innerHeight - 100) + 50,
-      speed: (1 + Math.random() * 2) * parseFloat(speedSlider.value)/2,
-      offset: Math.random() * Math.PI * 2,
-      size: size
-    });
+    texts.push({el:span, x:-200, y:Math.random()*(window.innerHeight-100)+50, speed:(1+Math.random()*2)*parseFloat(speedSlider.value)/2, offset:Math.random()*Math.PI*2, size:size});
   }
 
-  function populateInitial() {
-    texts.forEach(t => t.el.remove());
-    texts = [];
+  function addToHistory(word){
+    history.push(word);
+    const li = document.createElement("li");
+    li.textContent = word;
+    const btn = document.createElement("button");
+    btn.textContent="削除";
+    btn.onclick = () => {
+      li.remove();
+      history = history.filter(w=>w!==word);
+      wordPool = wordPool.filter(w=>w!==word);
+    };
+    li.appendChild(btn);
+    historyList.appendChild(li);
+  }
+
+  function addInputText(){
+    if(textInput.value.trim()!==""){
+      const words = textInput.value.split(" ");
+      words.forEach(word=>{
+        addText(word);
+        addToHistory(word);
+        wordPool.push(word);
+      });
+      textInput.value="";
+    }
+  }
+
+  textInput.addEventListener("keydown",e=>{if(e.key==="Enter") addInputText();});
+  addBtn.addEventListener("click", addInputText);
+
+  toggleBtn.addEventListener("click",()=>{sideControls.classList.toggle("hidden");});
+
+  function populateInitial(){
+    texts.forEach(t=>t.el.remove());
+    texts=[];
     const amount = parseInt(amountSlider.value);
-    for (let i = 0; i < amount; i++) {
-      const word = wordPool[Math.floor(Math.random() * wordPool.length)];
+    for(let i=0;i<amount;i++){
+      const word = wordPool[Math.floor(Math.random()*wordPool.length)];
       addText(word);
     }
   }
-
   populateInitial();
+  speedSlider.addEventListener("input",()=>{texts.forEach(t=>t.speed=(1+Math.random()*2)*parseFloat(speedSlider.value)/2);});
+  amountSlider.addEventListener("input",populateInitial);
+  sizeSlider.addEventListener("input",populateInitial);
 
-  function addInputText() {
-    if(textInput.value.trim() !== "") {
-      const words = textInput.value.split(" ");
-      words.forEach(word => {
-        addText(word);
-        wordPool.push(word); // 入力した単語も今後延々と流れる
-      });
-      textInput.value = "";
-    }
-  }
-  textInput.addEventListener("keydown", e => { if(e.key === "Enter") addInputText(); });
-  addBtn.addEventListener("click", addInputText);
-
-  speedSlider.addEventListener("input", () => {
-    texts.forEach(t => t.speed = (1 + Math.random() * 2) * parseFloat(speedSlider.value)/2);
-  });
-  amountSlider.addEventListener("input", populateInitial);
-  sizeSlider.addEventListener("input", populateInitial);
-
-  toggleBtn.addEventListener("click", () => {
-    sideControls.classList.toggle("hidden");
-  });
-
-  setInterval(() => {
-    const word = wordPool[Math.floor(Math.random() * wordPool.length)];
+  setInterval(()=>{
+    const word = wordPool[Math.floor(Math.random()*wordPool.length)];
     addText(word);
-  }, 500);
+  },500);
 
-  function animate() {
-    for (let i = texts.length - 1; i >= 0; i--) {
-      let t = texts[i];
-      t.x += t.speed;
-      const wave = Math.sin(Date.now() / 200 + t.offset) * 5;
-
-      if (t.x > window.innerWidth + 50) {
-        t.el.remove();
-        texts.splice(i,1);
-        continue;
-      }
-
-      t.el.style.transform = `translate(${t.x}px, ${t.y + wave}px)`;
+  function animate(){
+    for(let i=texts.length-1;i>=0;i--){
+      let t=texts[i];
+      t.x+=t.speed;
+      const wave = Math.sin(Date.now()/200 + t.offset)*5;
+      if(t.x>window.innerWidth+50){ t.el.remove(); texts.splice(i,1); continue; }
+      t.el.style.transform=`translate(${t.x}px, ${t.y+wave}px)`;
     }
     requestAnimationFrame(animate);
   }
-
   animate();
 });
 </script>
