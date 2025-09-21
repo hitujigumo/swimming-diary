@@ -5,37 +5,53 @@
 <title>泳ぐ日記</title>
 <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Comic+Neue:wght@700&family=Monoton&family=Courier+New&display=swap" rel="stylesheet">
 <style>
-  body { margin: 0; overflow: hidden; font-family: 'Arial', sans-serif; color: #aaffff; }
+  body { margin: 0; overflow: hidden; font-family: 'Arial', sans-serif; color: #aaffff; background: #001933; }
   body::before {
     content:""; position: fixed; top:0; left:0; width:100%; height:100%;
     background: linear-gradient(to bottom, #003366, #001933); z-index:-1;
   }
 
-  #title { position: fixed; top:10px; left:20px; font-size:28px; font-weight:bold; text-shadow:1px 1px 4px #000; z-index:1000; }
+  /* 題名 */
+  #title { position: fixed; top:10px; left:20px; font-size:36px; font-weight:bold; 
+    background: linear-gradient(45deg,#33ccff,#66ffff,#99ffff); 
+    -webkit-background-clip: text; color: transparent;
+    text-shadow: 2px 2px 6px #000; z-index:1000; }
 
+  /* 上部入力欄 */
   #top-controls {
     position: fixed; top:50px; left:50%; transform:translateX(-50%);
-    z-index:1000; background: rgba(0,0,0,0.3); padding:10px 15px;
-    border-radius:10px; display:flex; gap:10px; align-items:center;
+    z-index:1000; background: rgba(0,0,0,0.4); padding:15px 20px;
+    border-radius:15px; display:flex; gap:10px; align-items:center; flex-direction: column;
   }
-  #top-controls input[type="text"] { padding:5px 10px; border-radius:15px; border:none; outline:none; width:300px; background: rgba(255,255,255,0.15); color:#ccf; }
-  #top-controls button { padding:6px 12px; border-radius:15px; border:none; background:#0044aa; color:white; cursor:pointer; }
+  #top-controls label { font-size:16px; color:#aaffff; margin-bottom:5px; }
+  #top-controls input[type="text"] {
+    padding:6px 12px; border-radius:15px; border:none; outline:none; width:320px;
+    background: rgba(255,255,255,0.15); color:#ccf; box-shadow:0 2px 5px rgba(0,0,0,0.5);
+  }
+  #top-controls button {
+    padding:6px 12px; border-radius:15px; border:none; background:#0044aa; color:white; cursor:pointer;
+    box-shadow:0 2px 5px rgba(0,0,0,0.5);
+  }
   #top-controls button:hover { background:#003377; }
 
+  /* 設定パネル */
   #side-controls {
-    position: fixed; top:50px; right:10px; z-index:1000; background: rgba(0,0,0,0.3); padding:10px;
-    border-radius:10px; display:flex; flex-direction:column; gap:10px; transition: transform 0.3s;
+    position: fixed; top:50px; right:10px; z-index:1000; background: rgba(0,0,0,0.4);
+    padding:15px; border-radius:15px; display:flex; flex-direction:column; gap:10px; transition: transform 0.3s;
   }
   #side-controls.hidden { transform:translateX(120%); }
   #side-controls label { color:#aaffff; font-size:14px; }
   #history-list { max-height:300px; overflow-y:auto; list-style:none; padding:0; margin:0; color:#ccf; }
   #history-list li { display:flex; justify-content:space-between; padding:2px 4px; font-size:14px; }
+  #history-list button { border:none; border-radius:8px; background:#aa0000; color:white; cursor:pointer; padding:2px 5px; }
 
+  /* 流れる文字 */
   .fish-text {
     position: absolute; user-select: none; pointer-events: none; transition: transform 0.1s linear;
   }
   .timestamp { font-size:0.4em; opacity:0.5; margin-left:5px; }
 
+  /* 設定ボタン */
   #toggle-btn { position: fixed; top:50px; right:10px; z-index:1001; padding:6px 12px; border-radius:15px; border:none; background:#0044aa; color:white; cursor:pointer; }
   #toggle-btn:hover { background:#003377; }
 </style>
@@ -45,6 +61,7 @@
 <div id="title">泳ぐ日記</div>
 
 <div id="top-controls">
+  <label for="text-input">日記を書いて</label>
   <input type="text" id="text-input" placeholder="単語を入力してEnter or 追加">
   <button id="add-btn">追加</button>
 </div>
@@ -54,7 +71,7 @@
 <div id="side-controls" class="hidden">
   <label>速度: <input type="range" id="speed-slider" min="0.5" max="5" step="0.1" value="2"></label>
   <label>量: <input type="range" id="amount-slider" min="10" max="100" step="1" value="50"></label>
-  <label>文字サイズ: <input type="range" id="size-slider" min="10" max="50" step="1" value="24"></label>
+  <label>文字サイズ: <input type="range" id="size-slider" min="10" max="80" step="1" value="24"></label>
   <div>
     <strong>履歴</strong>
     <ul id="history-list"></ul>
@@ -67,7 +84,9 @@ document.addEventListener("DOMContentLoaded", () => {
   let wordPool = [
     "今日","楽しかった","悲しかった","面白い","どうだった",
     "天気","友達","学校","遊び","昼ごはん","気分","笑った","泣いた",
-    "埃","酒〜","∑","★","@!#","…？","∞","泡","謎","???"
+    "埃","酒〜","∑","★","@!#","…？","∞","泡","謎","???",
+    "？！？","$%&","◇◆","…!!","§",
+    "ここどこ〜","なぜ？","えーん","日記ですよ","うける","海だよ","海じゃないよ"
   ];
   let history = [];
 
@@ -95,7 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
     span.style.fontFamily = font;
 
     const baseSize = parseInt(sizeSlider.value);
-    const size = baseSize + Math.random()*10;
+    const size = baseSize + Math.random()*15;
     span.style.fontSize = size+"px";
 
     const hue = 180 + Math.random()*60;
