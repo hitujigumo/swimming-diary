@@ -2,13 +2,26 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>魚文字群れアニメ</title>
+<title>泳ぐ日記</title>
 <style>
   body {
     margin: 0;
     overflow: hidden;
-    background: linear-gradient(to bottom, #33ccff, #006699); /* 明るめ海色 */
+    background: linear-gradient(to bottom, #002244, #001122); /* 暗めの海色 */
     font-family: 'Arial', sans-serif;
+    color: #aaffff;
+  }
+
+  /* タイトル */
+  #title {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #aaffff;
+    text-shadow: 1px 1px 4px #000;
+    z-index: 1000;
   }
 
   .fish-text {
@@ -18,10 +31,10 @@
     transition: transform 0.1s linear;
   }
 
-  /* 入力欄デザイン */
+  /* 入力欄デザイン（上部中央） */
   #input-container {
     position: fixed;
-    bottom: 20px;
+    top: 70px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 1000;
@@ -35,13 +48,15 @@
     border-radius: 20px;
     border: none;
     outline: none;
-    background: rgba(255,255,255,0.8);
-    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    background: rgba(255,255,255,0.15); /* 暗め透明 */
+    color: #ccf;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
     width: 200px;
     transition: 0.2s;
   }
   #text-input:focus {
     width: 250px;
+    background: rgba(255,255,255,0.25);
   }
 
   #add-btn {
@@ -49,18 +64,20 @@
     padding: 8px 16px;
     border-radius: 20px;
     border: none;
-    background: #00ccff;
+    background: #0044aa;
     color: white;
     cursor: pointer;
     transition: 0.2s;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
   }
   #add-btn:hover {
-    background: #0099cc;
+    background: #003377;
   }
 </style>
 </head>
 <body>
+
+<div id="title">泳ぐ日記</div>
 
 <div id="input-container">
   <input type="text" id="text-input" placeholder="文字を入力してEnter or 追加">
@@ -78,10 +95,12 @@ document.addEventListener("DOMContentLoaded", () => {
     span.classList.add("fish-text");
     span.textContent = char;
 
-    // ランダムサイズ・色
+    // ランダムサイズ・青系色
     const size = 16 + Math.random() * 24; // 16〜40px
     span.style.fontSize = size + "px";
-    span.style.color = `hsl(${Math.random() * 360}, 80%, 70%)`;
+
+    const hue = 180 + Math.random() * 60; // 青系統 180〜240
+    span.style.color = `hsl(${hue}, 70%, 60%)`;
 
     document.body.appendChild(span);
 
