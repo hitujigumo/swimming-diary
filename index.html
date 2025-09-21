@@ -12,14 +12,17 @@
   }
 
   /* 題名 */
-  #title { position: fixed; top:10px; left:20px; font-size:36px; font-weight:bold; 
-    background: linear-gradient(45deg,#33ccff,#66ffff,#99ffff); 
-    -webkit-background-clip: text; color: transparent;
-    text-shadow: 2px 2px 6px #000; z-index:1000; }
+  #title {
+    position: fixed; top:10px; left:20px; z-index:1000;
+    font-size:48px; color:#66ddff; font-weight:bold; 
+    padding:10px 20px; border-radius:15px; 
+    background: rgba(255,255,255,0.2);
+    text-shadow: 2px 2px 6px #000;
+  }
 
   /* 上部入力欄 */
   #top-controls {
-    position: fixed; top:50px; left:50%; transform:translateX(-50%);
+    position: fixed; top:80px; left:50%; transform:translateX(-50%);
     z-index:1000; background: rgba(0,0,0,0.4); padding:15px 20px;
     border-radius:15px; display:flex; gap:10px; align-items:center; flex-direction: column;
   }
@@ -130,7 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     texts.push({
       el:span,
-      x:-400, // 左画面外に移動
+      x:-400,
       y:Math.random()*(window.innerHeight-100)+50,
       speed:(1+Math.random()*2)*parseFloat(speedSlider.value)/2,
       offset:Math.random()*Math.PI*2,
@@ -167,7 +170,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   textInput.addEventListener("keydown",e=>{if(e.key==="Enter") addInputText();});
   addBtn.addEventListener("click", addInputText);
-
   toggleBtn.addEventListener("click",()=>{sideControls.classList.toggle("hidden");});
 
   function populateInitial(){
