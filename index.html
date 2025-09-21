@@ -7,9 +7,24 @@
   body {
     margin: 0;
     overflow: hidden;
-    background: linear-gradient(to bottom, #001833, #000822); /* 暗めの青グラデーション */
     font-family: 'Arial', sans-serif;
     color: #aaffff;
+  }
+
+  /* アニメーション背景用の擬似要素 */
+  body::before {
+    content: "";
+    position: fixed;
+    top:0; left:0; width:100%; height:100%;
+    background: linear-gradient(to bottom, #001833, #000822);
+    z-index: -1;
+    animation: wave 10s ease-in-out infinite alternate;
+  }
+
+  @keyframes wave {
+    0% { transform: translateY(0px); background-position: 0 0; }
+    50% { transform: translateY(-20px); background-position: 0 20px; }
+    100% { transform: translateY(0px); background-position: 0 0; }
   }
 
   /* タイトル */
@@ -24,7 +39,7 @@
     z-index: 1000;
   }
 
-  /* コントロールパネル（タイトルの下、上部にまとめる） */
+  /* コントロールパネル */
   #controls {
     position: fixed;
     top: 50px;
@@ -116,12 +131,10 @@ document.addEventListener("DOMContentLoaded", () => {
     span.classList.add("fish-text");
     span.textContent = char;
 
-    // サイズランダムにスライダー値も反映
     const baseSize = parseInt(sizeSlider.value);
     const size = baseSize + Math.random() * 10;
     span.style.fontSize = size + "px";
 
-    // 青系ランダム
     const hue = 180 + Math.random() * 60;
     span.style.color = `hsl(${hue}, 70%, 60%)`;
 
@@ -137,7 +150,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 初期文字を追加
   function populateInitial() {
     texts.forEach(t => t.el.remove());
     texts = [];
@@ -150,13 +162,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   populateInitial();
 
-  // マウス位置
   window.addEventListener("mousemove", e => {
     mouse.x = e.clientX;
     mouse.y = e.clientY;
   });
 
-  // 入力対応
   function addInputText() {
     if(textInput.value.trim() !== "") {
       textInput.value.split("").forEach(c => addText(c));
@@ -166,21 +176,18 @@ document.addEventListener("DOMContentLoaded", () => {
   textInput.addEventListener("keydown", e => { if(e.key === "Enter") addInputText(); });
   addBtn.addEventListener("click", addInputText);
 
-  // スライダー変化で再生成
   speedSlider.addEventListener("input", () => {
     texts.forEach(t => t.speed = (1 + Math.random() * 2) * parseFloat(speedSlider.value)/2);
   });
   amountSlider.addEventListener("input", populateInitial);
   sizeSlider.addEventListener("input", populateInitial);
 
-  // アニメーション
   function animate() {
     texts.forEach(t => {
       t.x += t.speed;
 
       const wave = Math.sin(Date.now() / 200 + t.offset) * 5;
 
-      // マウス回避
       const dx = t.x - mouse.x;
       const dy = t.y - mouse.y;
       const dist = Math.sqrt(dx*dx + dy*dy);
