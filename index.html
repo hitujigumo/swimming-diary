@@ -175,8 +175,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     texts.push({
       el: span,
-      x: -20, // 左端から開始
-      y: Math.random() * (window.innerHeight - 100) + 50, // 上から入力欄避ける
+      x: -50, // 左端からスタート
+      y: Math.random() * (window.innerHeight - 100) + 50, // 上部入力欄避ける
       speed: (1 + Math.random() * 2) * parseFloat(speedSlider.value)/2,
       offset: Math.random() * Math.PI * 2,
       size: size
@@ -219,12 +219,12 @@ document.addEventListener("DOMContentLoaded", () => {
     for (let i = texts.length - 1; i >= 0; i--) {
       let t = texts[i];
       t.x += t.speed;
-      const wave = Math.sin(Date.now() / 200 + t.offset) * 5;
+      const wave = Math.sin(Date.now() / 200 + t.offset) * 5; // Y方向の軽い揺れ
 
       if (t.x > window.innerWidth + 50) {
         t.el.remove();
         texts.splice(i,1);
-        // 左端から新しい文字生成
+        // 左端から新しい文字を生成して常に延々と流れる
         const word = initialWords[Math.floor(Math.random() * initialWords.length)];
         addText(word);
         continue;
