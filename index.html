@@ -7,7 +7,7 @@
   body {
     margin: 0;
     overflow: hidden;
-    background: linear-gradient(to bottom, #002244, #001122);
+    background: linear-gradient(to bottom, #001833, #000822); /* 暗めの青グラデーション */
     font-family: 'Arial', sans-serif;
     color: #aaffff;
   }
@@ -24,10 +24,10 @@
     z-index: 1000;
   }
 
-  /* 入力欄＆設定パネル */
+  /* コントロールパネル（タイトルの下、上部にまとめる） */
   #controls {
     position: fixed;
-    top: 60px;
+    top: 50px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 1000;
@@ -36,8 +36,9 @@
     border-radius: 10px;
     display: flex;
     gap: 10px;
-    align-items: center;
     flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
   }
 
   #controls input[type="text"] {
@@ -117,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // サイズランダムにスライダー値も反映
     const baseSize = parseInt(sizeSlider.value);
-    const size = baseSize + Math.random() * 10; // 少しランダム
+    const size = baseSize + Math.random() * 10;
     span.style.fontSize = size + "px";
 
     // 青系ランダム
